@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+        <!--title is required in every html head and describes the webpage-->
+        <title>Assignment Two</title>
+    </head>
+    <body>
+        <header>
+            <h1>USCA Virtual Tour</h1>
+            <!--iframe embeds one document within another-->
+            <iframe src="https://www.youtube.com/embed/_MMga99JDxI?si=inp9cDU_vIQjYBUy" title="USC Aiken Campus Tour" frameborder="0"></iframe>
+        </header>
+        <body>
+            <h2>Please provide feeback on the video/website</h2>
+            <form name="feedback">
+                <fieldset>
+                    <legend>Your Info</legend>
+                    <label for="fname">First name:</label>
+                    <input type="text" id="fname" name="fname" placeholder="anonymous" required><br>
+                    <label for="lname">Last name:</label>
+                    <input type="text" id="lname" name="lname" placeholder="anonymous" required><br>
+                    <label for="tel">Telephone</label>
+                    <input type="tel" id="tel" name="tel" id="" placeholder="(000)000-0000" required><br>
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="mail" placeholder="name@domain.com">
+                </fieldset>
+                <fieldset>
+                    <legend>Your feedback</legend>
+                    <p>Would you like to recommend this website?</p>
+                    <input type="radio" id="Yes" name="yes" value="yes">
+                    <label for="Yes">Yes</label><br>
+                    <input type="radio" id="No" name="no" value="no">
+                    <label for="No">No</label><br>
+                    <label for="fweb">Choose your favorite website:</label>
+                    <select name="fweb" id="fweb">
+                        <option value="google">Google</option>
+                        <option value="bing">Bing</option>
+                        <option value="duckduckgo">DuckDuckGo</option>
+                        <option value="yahoo">Yahoo</option>
+                        <option value="facebook">Facebook</option>
+                        <option value="twitter">Twitter</option>
+                        <option value="instagram">Instagram</option>
+                    </select><br>
+                    <label for="rweb">Please rate the website on a scale of 1-10: </label>
+                    <input type="range" id="rweb" name="rating" min="0" max="10"><br>
+                    <label for="com">Please leave any additional comments here:</label><br>
+                    <textarea name="comment" id="com" cols="30" rows="10"></textarea><br>
+                </fieldset>
+                <br>
+                <input type="submit" value="Submit">
+                <input type="reset" value="Reset">
+                <button type="button" value="Clicked" name="hello" onclick="alert('Hello World')">Click Me!</button>
+            </form>
+        </body>
+        <footer>
+            <p>&copy;Keenan</p>
+        </footer>
+    </body>
+</html>
