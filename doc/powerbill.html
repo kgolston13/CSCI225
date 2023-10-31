@@ -1,9 +1,155 @@
 <!DOCTYPE html>
-<html lang="en-us">
+<html>
     <head>
-
+        <title>Georgia Power Bill Calculator</title>
     </head>
     <body>
+        <h1>Georgia Power Bill Calculator</h1>
+        <p>The utility bill calculator is a resouce that the Commision is making available that allows a consumer to check
+        the accuracy of his/her monthly electric bill. A bill calculator has been prepared for customers of the Georgia Power
+        Company. This bill calculator applies only to residential customers who are recieving service under the standard 
+        Residential Tariff. For more details regarding Georgia Power's residential tariff offerings, please visit Georgia Power 
+        Pricing and Rates.</p>
+        <p>Effective November 2023</p>
+        <!--Form for calculating your monthly bill amount-->
+        <form id="powerbill">
+            <!--Label/input for the monthly usage-->
+            <label for="usage">Enter your Monthly Usage in kilowatt hours &lpar;kWh&rpar;&#58;</label>
+            <input type="number" id="usage" step="any" required>
+            </br>
+            <!--Label/input for the number of days in billing period-->
+            <label for="days">Enter the number of days for your current billing period&#58;</label>
+            <input type="number" id="days" step="any" required>
+            </br>
+            <!--Label/input for if the residence is in the city limits-->
+            <label for="city">Is your residence located within the city limits&#63;</label>
+            <input type="checkbox" id="city" name="city" value="yes" required>
+            </br>
+            <!--Label/input for if it is summer-->
+            <label for="summer">Is this a Summer month &lpar;June - September&rpar;&#63;</label>
+            <input type="checkbox" id="summer" name="summer" value="yes" required>
+            </br>
+            <!--Label/input for entering sales tax-->
+            <label for="tax">Enter Sales Tax&lpar;&#37;&rpar;&#58;</label>
+            <input type="number" id="tax" step="any" required>
+            </br>
+            <!--Submit/reset buttons-->
+            <button type="submit">Submit</button>
+            <button type="reset">Reset</button>
+        </form>
+        <!--Results section-->
+        <div id="results">
+            <!-- Display results here -->
+            <h1>Details of your bill</h1>
+            <!--Store the results in a table-->
+            <table>
+                <!--Table headers-->
+                <tr>
+                    <th>Items</th>
+                    <th>Fees</th>
+                </tr>
+                <!--Table rows-->
+                <!--Base charge, 46.03 cents a day-->
+                <tr>
+                    <td>Base Charge&#58;</td>
+                    <td></td>
+                </tr>
+                <!--Tier Component (kWh), effected by if it is summer, and kWh usage.
+                Has 3 tiers. Summer: Tier 1-up to 650kWh/$0.066678, Tier 2-over 650 but
+                up to 350kWh/$0.110748, and Tier 3-over 1000kWh/$0.114625. Not Summer:
+                Tier 1-3 all $0.062404-->
+                <tr>
+                    <td>Tier 1 Component&lpar;kWh&rpar;&#58;</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Tier 2 Component&lpar;kWh&rpar;&#58;</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Tier 3 Component&lpar;kWh&rpar;&#58;</td>
+                    <td></td>
+                </tr>
+                <!--Base revenue = base charge + Tier 1 + Tier 2 + Tier 3-->
+                <tr>
+                    <td>Base Revenue&#58;</td>
+                    <td></td>
+                </tr>
+                <!--Fuel Cost Rider, Cost per kWh in Summer: $0.045867, Not Summer: $0.042859-->
+                <tr>
+                    <td>Fuel Cost Rider&#58;</td>
+                    <td></td>
+                </tr>
+                <!--Demand Side Management Residential Rider, 1.5989% of base revenue-->
+                <tr>
+                    <td>Demand Side Management Residential Rider&#58;</td>
+                    <td></td>
+                </tr>
+                <!--Nuclear Construction Cost Recovery Rider, 4.1562% of base revenue-->
+                <tr>
+                    <td>Nuclear Construction Cost Recovery Rider&#58;</td>
+                    <td></td>
+                </tr>
+                <!--Environmental Compliance Cost Recovery Rider, 16.2813% of base revenue-->
+                <tr>
+                    <td>Environmental Compliance Cost Recovery Rider&#58;</td>
+                    <td></td>
+                </tr>
+                <!--Total Revenue = Base Revenue + Fuel Cost + Demand Side Management + Nuclear Cost Recovery 
+                + Environmental Compliace-->
+                <tr>
+                    <td>Total Revenue &#8210; &#8210; Current Service Subtotal&#58;</td>
+                    <td></td>
+                </tr>
+                <!--Franchise Fee, % of total revenue based off whether inside or outisde city limits, 
+                Inside: 3.0674%, Outside: 1.1839%-->
+                <tr>
+                    <td>Franchise Fee&#58;</td>
+                    <td></td>
+                </tr>
+                <!--Total before tax = total revenue + franchise fee-->
+                <tr>
+                    <td>Total &lpar;excluding tax&rpar;&#58;</td>
+                    <td></td>
+                </tr>
+                <!--Total with tax-->
+                <tr>
+                    <td>Total &lpar;including tax&rpar;&#58;</td>
+                    <td></td>
+                </tr>
+            </table>
+        </div>
 
+        <a href="https://www.georgiapower.com/residential/save-money-and-energy/products-programs.html" id="externalLink" target="_blank">Learn more about saving money and energy.</a>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const form = document.getElementById('powerbill');
+                const results = document.getElementById('results');
+                const externalLink = document.getElementById('externalLink');
+  
+                form.addEventListener('submit', function (event) {
+                    event.preventDefault();
+              
+                    // Get user input values and convert them to appropriate data types
+                    const monthlyUsage = parseFloat(document.getElementById('monthlyUsage').value);
+                    // Get other input values similarly
+  
+                    // Perform the necessary calculations based on the provided rate schedules, riders, and fees
+                    // ...
+  
+                    // Display the calculated values in the results section
+                    results.innerHTML = `
+                    <h2>Calculated Results</h2>
+                    <!-- Display the calculated values here -->
+                    `;
+  
+                    // Check if the total bill is over $500 and open the provided link
+                    if (totalBill > 500) {
+                        externalLink.click();
+                    }
+                });
+            });
+        </script>
     </body>
 </html>
