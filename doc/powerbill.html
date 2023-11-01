@@ -122,34 +122,144 @@
 
         <a href="https://www.georgiapower.com/residential/save-money-and-energy/products-programs.html" id="externalLink" target="_blank">Learn more about saving money and energy.</a>
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const form = document.getElementById('powerbill');
-                const results = document.getElementById('results');
-                const externalLink = document.getElementById('externalLink');
-  
-                form.addEventListener('submit', function (event) {
-                    event.preventDefault();
-              
-                    // Get user input values and convert them to appropriate data types
-                    const monthlyUsage = parseFloat(document.getElementById('monthlyUsage').value);
-                    // Get other input values similarly
-  
-                    // Perform the necessary calculations based on the provided rate schedules, riders, and fees
-                    // ...
-  
-                    // Display the calculated values in the results section
-                    results.innerHTML = `
-                    <h2>Calculated Results</h2>
-                    <!-- Display the calculated values here -->
-                    `;
-  
-                    // Check if the total bill is over $500 and open the provided link
-                    if (totalBill > 500) {
-                        externalLink.click();
-                    }
-                });
-            });
-        </script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('powerbill');
+        const results = document.getElementById('results');
+        const externalLink = document.getElementById('externalLink');
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            // Get user input values and convert them to appropriate data types
+            const monthlyUsage = parseFloat(document.getElementById('usage').value);
+            const days = parseFloat(document.getElementById('days').value);
+            const isInsideCity = document.getElementById('city').checked;
+            const isSummer = document.getElementById('summer').checked;
+            const taxRate = parseFloat(document.getElementById('tax').value);
+
+            // Define rate constants
+            const baseChargePerDay = 0.4603; // 46.03 cents per day
+            const summerRates = {
+                tier1: { usage: 650, rate: 0.066678 },
+                tier2: { usage: 1000, rate: 0.110748 },
+                tier3: { usage: 1001, rate: 0.114625 }
+            };
+            const notSummerRate = 0.062404; // 6.2404 cents per kWh
+
+            // Perform the necessary calculations
+            const baseCharge = baseChargePerDay * days;
+            let tier1 = 0, tier2 = 0, tier3 = 0;
+
+            if (isSummer) {
+                if (monthlyUsage <= summerRates.tier1.usage) {
+                    tier1 = monthlyUsage * summerRates.tier1.rate;
+                } else if (monthlyUsage <= summerRates.tier2.usage) {
+                    tier1 = summerRates.tier1.usage * summerRates.tier1.rate;
+                    tier2 = (monthlyUsage - summerRates.tier1.usage) * summerRates.tier2.rate;
+                } else {
+                    tier1 = summerRates.tier1.usage * summerRates.tier1.rate;
+                    tier2 = (summerRates.tier2.usage - summerRates.tier1.usage) * summerRates.tier2.rate;
+                    tier3 = (monthlyUsage - summerRates.tier2.usage) * summerRates.tier3.rate;
+                }
+            } else {
+                tier1 = monthlyUsage * notSummerRate;
+            }
+
+            const baseRevenue = baseCharge + tier1 + tier2 + tier3;
+
+            // Calculate Fuel Cost Rider (you should define the rates for summer and non-summer)
+            let fuelCostRider = 0;
+
+            // Calculate Demand Side Management Residential Rider (1.5989% of base revenue)
+            const demandSideManagementRider = baseRevenue * 0.015989;
+
+            // Calculate Nuclear Construction Cost Recovery Rider (4.1562% of base revenue)
+            const nuclearCostRecoveryRider = baseRevenue * 0.041562;
+
+            // Calculate Environmental Compliance Cost Recovery Rider (16.2813% of base revenue)
+            const environmentalCostRecoveryRider = baseRevenue * 0.162813;
+
+            // Calculate Franchise Fee based on whether inside or outside city limits
+            let franchiseFee = 0;
+            if (isInsideCity) {
+                franchiseFee = totalBeforeTax * 0.030674; // Inside City
+            } else {
+                franchiseFee = totalBeforeTax * 0.011839; // Outside City
+            }
+
+            // Calculate Total (excluding tax)
+            const totalBeforeTax = baseRevenue + fuelCostRider + demandSideManagementRider + nuclearCostRecoveryRider + environmentalCostRecoveryRider + franchiseFee;
+
+            // Calculate Total (including tax)
+            const totalWithTax = totalBeforeTax * (1 + taxRate / 100);
+
+            // Display the calculated values in the results section
+            results.innerHTML = `
+                <h2>Details of your bill</h2>
+                <table>
+                    <tr>
+                        <th>Items</th>
+                        <th>Fees</th>
+                    </tr>
+                    <tr>
+                        <td>Base Charge:</td>
+                        <td>${baseCharge.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td>Tier 1 Component (kWh):</td>
+                        <td>${tier1.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td>Tier 2 Component (kWh):</td>
+                        <td>${tier2.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td>Tier 3 Component (kWh):</td>
+                        <td>${tier3.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td>Base Revenue:</td>
+                        <td>${baseRevenue.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td>Fuel Cost Rider:</td>
+                        <td>${fuelCostRider.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td>Demand Side Management Residential Rider:</td>
+                        <td>${demandSideManagementRider.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td>Nuclear Construction Cost Recovery Rider:</td>
+                        <td>${nuclearCostRecoveryRider.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td>Environmental Compliance Cost Recovery Rider:</td>
+                        <td>${environmentalCostRecoveryRider.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td>Franchise Fee:</td>
+                        <td>${franchiseFee.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td>Total (excluding tax):</td>
+                        <td>${totalBeforeTax.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td>Total (including tax):</td>
+                        <td>${totalWithTax.toFixed(2)}</td>
+                    </tr>
+                </table>
+            `;
+
+            // Check if the total bill is over $500 and open the provided link
+            if (totalWithTax > 500) {
+                externalLink.click();
+            }
+        });
+    });
+</script>
+
     </body>
 </html>
