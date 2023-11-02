@@ -23,11 +23,11 @@
             </br>
             <!--Label/input for if the residence is in the city limits-->
             <label for="city">Is your residence located within the city limits&#63;</label>
-            <input type="checkbox" id="city" name="city" value="yes" required>
+            <input type="checkbox" id="city" name="city" value="yes">
             </br>
             <!--Label/input for if it is summer-->
             <label for="summer">Is this a Summer month &lpar;June - September&rpar;&#63;</label>
-            <input type="checkbox" id="summer" name="summer" value="yes" required>
+            <input type="checkbox" id="summer" name="summer" value="yes">
             </br>
             <!--Label/input for entering sales tax-->
             <label for="tax">Enter Sales Tax&lpar;&#37;&rpar;&#58;</label>
@@ -43,223 +43,161 @@
             <h1>Details of your bill</h1>
             <!--Store the results in a table-->
             <table>
-                <!--Table headers-->
-                <tr>
-                    <th>Items</th>
-                    <th>Fees</th>
-                </tr>
                 <!--Table rows-->
                 <!--Base charge, 46.03 cents a day-->
                 <tr>
                     <td>Base Charge&#58;</td>
-                    <td></td>
+                    <td id="baseCharge"></td>
                 </tr>
-                <!--Tier Component (kWh), effected by if it is summer, and kWh usage.
-                Has 3 tiers. Summer: Tier 1-up to 650kWh/$0.066678, Tier 2-over 650 but
-                up to 350kWh/$0.110748, and Tier 3-over 1000kWh/$0.114625. Not Summer:
-                Tier 1-3 all $0.062404-->
+                <!--Tier Component (kWh), affected by if it is summer, and kWh usage.
+                Has 3 tiers. Summer: Tier 1-up to 650kWh/$0.066678, Tier 2-over
+                650 but up to 350kWh/$0.110748, and Tier 3-over 1000kWh/$0.114625.
+                Not Summer: Tier 1-3 all $0.062404-->
                 <tr>
-                    <td>Tier 1 Component&lpar;kWh&rpar;&#58;</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>Tier 2 Component&lpar;kWh&rpar;&#58;</td>
-                    <td></td>
+                    <td>Tier 1 Component (kWh):</td>
+                    <td id="tier1"></td>
                 </tr>
                 <tr>
-                    <td>Tier 3 Component&lpar;kWh&rpar;&#58;</td>
-                    <td></td>
+                    <td>Tier 2 Component (kWh):</td>
+                    <td id="tier2"></td>
+                </tr>
+                <tr>
+                    <td>Tier 3 Component (kWh):</td>
+                    <td id="tier3"></td>
                 </tr>
                 <!--Base revenue = base charge + Tier 1 + Tier 2 + Tier 3-->
                 <tr>
                     <td>Base Revenue&#58;</td>
-                    <td></td>
+                    <td id="baseRevenue"></td>
                 </tr>
                 <!--Fuel Cost Rider, Cost per kWh in Summer: $0.045867, Not Summer: $0.042859-->
                 <tr>
                     <td>Fuel Cost Rider&#58;</td>
-                    <td></td>
+                    <td id="fuelCostRider"></td>
                 </tr>
                 <!--Demand Side Management Residential Rider, 1.5989% of base revenue-->
                 <tr>
                     <td>Demand Side Management Residential Rider&#58;</td>
-                    <td></td>
+                    <td id="demandSideRider"></td>
                 </tr>
                 <!--Nuclear Construction Cost Recovery Rider, 4.1562% of base revenue-->
                 <tr>
                     <td>Nuclear Construction Cost Recovery Rider&#58;</td>
-                    <td></td>
+                    <td id="nuclearRider"></td>
                 </tr>
                 <!--Environmental Compliance Cost Recovery Rider, 16.2813% of base revenue-->
                 <tr>
                     <td>Environmental Compliance Cost Recovery Rider&#58;</td>
-                    <td></td>
+                    <td id="environmentalRider"></td>
                 </tr>
                 <!--Total Revenue = Base Revenue + Fuel Cost + Demand Side Management + Nuclear Cost Recovery 
-                + Environmental Compliace-->
+                + Environmental Compliance-->
                 <tr>
                     <td>Total Revenue &#8210; &#8210; Current Service Subtotal&#58;</td>
-                    <td></td>
+                    <td id="totalRevenue"></td>
                 </tr>
-                <!--Franchise Fee, % of total revenue based off whether inside or outisde city limits, 
+                <!--Franchise Fee, % of total revenue based off whether inside or outside city limits, 
                 Inside: 3.0674%, Outside: 1.1839%-->
                 <tr>
                     <td>Franchise Fee&#58;</td>
-                    <td></td>
+                    <td id="franchiseFee"></td>
                 </tr>
                 <!--Total before tax = total revenue + franchise fee-->
                 <tr>
                     <td>Total &lpar;excluding tax&rpar;&#58;</td>
-                    <td></td>
+                    <td id="totalBeforeTax"></td>
                 </tr>
                 <!--Total with tax-->
                 <tr>
                     <td>Total &lpar;including tax&rpar;&#58;</td>
-                    <td></td>
+                    <td id="totalWithTax"></td>
                 </tr>
+
             </table>
         </div>
 
         <a href="https://www.georgiapower.com/residential/save-money-and-energy/products-programs.html" id="externalLink" target="_blank">Learn more about saving money and energy.</a>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const form = document.getElementById('powerbill');
-        const results = document.getElementById('results');
-        const externalLink = document.getElementById('externalLink');
-
-        form.addEventListener('submit', function (event) {
-            event.preventDefault();
-
-            // Get user input values and convert them to appropriate data types
-            const monthlyUsage = parseFloat(document.getElementById('usage').value);
-            const days = parseFloat(document.getElementById('days').value);
-            const isInsideCity = document.getElementById('city').checked;
-            const isSummer = document.getElementById('summer').checked;
-            const taxRate = parseFloat(document.getElementById('tax').value);
-
-            // Define rate constants
-            const baseChargePerDay = 0.4603; // 46.03 cents per day
-            const summerRates = {
-                tier1: { usage: 650, rate: 0.066678 },
-                tier2: { usage: 1000, rate: 0.110748 },
-                tier3: { usage: 1001, rate: 0.114625 }
-            };
-            const notSummerRate = 0.062404; // 6.2404 cents per kWh
-
-            // Perform the necessary calculations
-            const baseCharge = baseChargePerDay * days;
-            let tier1 = 0, tier2 = 0, tier3 = 0;
-
-            if (isSummer) {
-                if (monthlyUsage <= summerRates.tier1.usage) {
-                    tier1 = monthlyUsage * summerRates.tier1.rate;
-                } else if (monthlyUsage <= summerRates.tier2.usage) {
-                    tier1 = summerRates.tier1.usage * summerRates.tier1.rate;
-                    tier2 = (monthlyUsage - summerRates.tier1.usage) * summerRates.tier2.rate;
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('powerbill');
+            const results = document.getElementById('results');
+            const externalLink = document.getElementById('externalLink');
+            
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+            
+                // Get user input values and convert them to appropriate data types
+                const monthlyUsage = parseFloat(document.getElementById('usage').value);
+                const days = parseFloat(document.getElementById('days').value);
+                const isInsideCity = document.getElementById('city').checked;
+                const isSummer = document.getElementById('summer').checked;
+                const taxRate = parseFloat(document.getElementById('tax').value)
+                // Define rate constants
+                const baseChargePerDay = 0.4603; // 46.03 cents per day
+                const summerRates = {
+                    tier1: { usage: 650, rate: 0.066678 },
+                    tier2: { usage: 1000, rate: 0.110748 },
+                    tier3: { usage: 1001, rate: 0.114625 }
+                };
+                const notSummerRate = 0.062404; // 6.2404 cents per kWh
+                const fuelCostSummer = 0.045867; // Fuel Cost Rider for summer
+                const fuelCostNotSummer = 0.042859; // Fuel Cost Rider for non-summer
+            
+                // Perform the necessary calculations
+                const baseCharge = baseChargePerDay * days;
+                let tier1 = 0, tier2 = 0, tier3 = 0;
+            
+                if (isSummer) {
+                    if (monthlyUsage <= summerRates.tier1.usage) {
+                        tier1 = monthlyUsage * summerRates.tier1.rate;
+                    } else if (monthlyUsage <= summerRates.tier2.usage) {
+                        tier1 = summerRates.tier1.usage * summerRates.tier1.rate;
+                        tier2 = (monthlyUsage - summerRates.tier1.usage) * summerRates.tier2.rate;
+                    } else {
+                        tier1 = summerRates.tier1.usage * summerRates.tier1.rate;
+                        tier2 = (summerRates.tier2.usage - summerRates.tier1.usage) * summerRates.tier2.rate;
+                        tier3 = (monthlyUsage - summerRates.tier2.usage) * summerRates.tier3.rate;
+                    }
                 } else {
-                    tier1 = summerRates.tier1.usage * summerRates.tier1.rate;
-                    tier2 = (summerRates.tier2.usage - summerRates.tier1.usage) * summerRates.tier2.rate;
-                    tier3 = (monthlyUsage - summerRates.tier2.usage) * summerRates.tier3.rate;
+                    tier1 = monthlyUsage * notSummerRate;
                 }
-            } else {
-                tier1 = monthlyUsage * notSummerRate;
-            }
-
-            const baseRevenue = baseCharge + tier1 + tier2 + tier3;
-
-            // Calculate Fuel Cost Rider (you should define the rates for summer and non-summer)
-            let fuelCostRider = 0;
-
-            // Calculate Demand Side Management Residential Rider (1.5989% of base revenue)
-            const demandSideManagementRider = baseRevenue * 0.015989;
-
-            // Calculate Nuclear Construction Cost Recovery Rider (4.1562% of base revenue)
-            const nuclearCostRecoveryRider = baseRevenue * 0.041562;
-
-            // Calculate Environmental Compliance Cost Recovery Rider (16.2813% of base revenue)
-            const environmentalCostRecoveryRider = baseRevenue * 0.162813;
-
-            // Calculate Franchise Fee based on whether inside or outside city limits
-            let franchiseFee = 0;
-            if (isInsideCity) {
-                franchiseFee = totalBeforeTax * 0.030674; // Inside City
-            } else {
-                franchiseFee = totalBeforeTax * 0.011839; // Outside City
-            }
-
-            // Calculate Total (excluding tax)
-            const totalBeforeTax = baseRevenue + fuelCostRider + demandSideManagementRider + nuclearCostRecoveryRider + environmentalCostRecoveryRider + franchiseFee;
-
-            // Calculate Total (including tax)
-            const totalWithTax = totalBeforeTax * (1 + taxRate / 100);
-
-            // Display the calculated values in the results section
-            results.innerHTML = `
-                <h2>Details of your bill</h2>
-                <table>
-                    <tr>
-                        <th>Items</th>
-                        <th>Fees</th>
-                    </tr>
-                    <tr>
-                        <td>Base Charge:</td>
-                        <td>${baseCharge.toFixed(2)}</td>
-                    </tr>
-                    <tr>
-                        <td>Tier 1 Component (kWh):</td>
-                        <td>${tier1.toFixed(2)}</td>
-                    </tr>
-                    <tr>
-                        <td>Tier 2 Component (kWh):</td>
-                        <td>${tier2.toFixed(2)}</td>
-                    </tr>
-                    <tr>
-                        <td>Tier 3 Component (kWh):</td>
-                        <td>${tier3.toFixed(2)}</td>
-                    </tr>
-                    <tr>
-                        <td>Base Revenue:</td>
-                        <td>${baseRevenue.toFixed(2)}</td>
-                    </tr>
-                    <tr>
-                        <td>Fuel Cost Rider:</td>
-                        <td>${fuelCostRider.toFixed(2)}</td>
-                    </tr>
-                    <tr>
-                        <td>Demand Side Management Residential Rider:</td>
-                        <td>${demandSideManagementRider.toFixed(2)}</td>
-                    </tr>
-                    <tr>
-                        <td>Nuclear Construction Cost Recovery Rider:</td>
-                        <td>${nuclearCostRecoveryRider.toFixed(2)}</td>
-                    </tr>
-                    <tr>
-                        <td>Environmental Compliance Cost Recovery Rider:</td>
-                        <td>${environmentalCostRecoveryRider.toFixed(2)}</td>
-                    </tr>
-                    <tr>
-                        <td>Franchise Fee:</td>
-                        <td>${franchiseFee.toFixed(2)}</td>
-                    </tr>
-                    <tr>
-                        <td>Total (excluding tax):</td>
-                        <td>${totalBeforeTax.toFixed(2)}</td>
-                    </tr>
-                    <tr>
-                        <td>Total (including tax):</td>
-                        <td>${totalWithTax.toFixed(2)}</td>
-                    </tr>
-                </table>
-            `;
-
-            // Check if the total bill is over $500 and open the provided link
-            if (totalWithTax > 500) {
-                externalLink.click();
-            }
+            
+                const baseRevenue = baseCharge + tier1 + tier2 + tier3
+                // Calculate Fuel Cost Rider
+                const fuelCostRider = isSummer ? monthlyUsage * fuelCostSummer : monthlyUsage * fuelCostNotSummer
+                // Calculate Demand Side Management Residential Rider (1.5989% of base revenue)
+                const demandSideManagementRider = baseRevenue * 0.015989
+                // Calculate Nuclear Construction Cost Recovery Rider (4.1562% of base revenue)
+                const nuclearCostRecoveryRider = baseRevenue * 0.041562
+                // Calculate Environmental Compliance Cost Recovery Rider (16.2813% of base revenue)
+                const environmentalCostRecoveryRider = baseRevenue * 0.162813
+                // Calculate Franchise Fee based on whether inside or outside city limits
+                let franchiseFee = isInsideCity ? (baseRevenue + fuelCostRider + demandSideManagementRider + nuclearCostRecoveryRider + environmentalCostRecoveryRider) * 0.030674 : (baseRevenue + fuelCostRider + demandSideManagementRider + nuclearCostRecoveryRider + environmentalCostRecoveryRider) * 0.011839
+                // Calculate Total (excluding tax)
+                const totalBeforeTax = baseRevenue + fuelCostRider + demandSideManagementRider + nuclearCostRecoveryRider + environmentalCostRecoveryRider + franchiseFee
+                // Calculate Total (including tax)
+                const totalWithTax = totalBeforeTax * (1 + taxRate / 100)
+                // Display the calculated values in the table
+                document.getElementById('baseCharge').textContent = baseCharge.toFixed(2);
+                document.getElementById('tier1').textContent = tier1.toFixed(2);
+                document.getElementById('tier2').textContent = tier2.toFixed(2);
+                document.getElementById('tier3').textContent = tier3.toFixed(2);
+                document.getElementById('baseRevenue').textContent = baseRevenue.toFixed(2);
+                document.getElementById('fuelCostRider').textContent = fuelCostRider.toFixed(2);
+                document.getElementById('demandSideRider').textContent = demandSideManagementRider.toFixed(2);
+                document.getElementById('nuclearRider').textContent = nuclearCostRecoveryRider.toFixed(2);
+                document.getElementById('environmentalRider').textContent = environmentalCostRecoveryRider.toFixed(2);
+                document.getElementById('franchiseFee').textContent = franchiseFee.toFixed(2);
+                document.getElementById('totalBeforeTax').textContent = totalBeforeTax.toFixed(2);
+                document.getElementById('totalWithTax').textContent = totalWithTax.toFixed(2)
+                // Check if the total bill is over $500 and open the provided link
+                if (totalWithTax > 500) {
+                    externalLink.click();
+                }
+            });
         });
-    });
-</script>
+        </script>
 
     </body>
 </html>
