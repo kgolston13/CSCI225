@@ -1,0 +1,75 @@
+/* realestate.css */
+
+/* Body styles */
+body {
+    background-image: url('../img/Estate.jpeg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    color: white;
+    margin: 0;
+}
+
+/* Navigation styles */
+nav {
+    background-color: #333;
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 10px;
+}
+
+nav li {
+    display: inline;
+    margin-right: 20px;
+}
+
+nav a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+}
+
+/* Section styles */
+div {
+    display: none; /* Initially hide all sections */
+    padding: 20px;
+}
+
+/* Optional: Style headings and paragraphs within sections */
+h2 {
+    color: white;
+}
+
+p {
+    color: white;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table, th, td {
+    border: 1px solid #333;
+}
+
+th, td {
+    padding: 10px;
+    text-align: center;
+}
+
+
+/* Display only the selected section */
+#buy.active,
+#sale.active,
+#loan.active,
+#about.active {
+    display: block;
+}
+
+/* Style the active link */
+nav li.active {
+    border-bottom: 2px solid white; /* Add a visual indicator for the active link */
+}

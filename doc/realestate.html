@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="UTF-8">
+    <title>Real Estate Website</title>
+    <link rel="stylesheet" type="text/css" href="../css/realestate.css">
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="#buy">Buy</a></li>
+            <li><a href="#sale">Sale</a></li>
+            <li><a href="#loan">Loan</a></li>
+            <li><a href="#about">About</a></li>
+        </ul>
+    </nav>
+    </header>
+    <div id="buy" data-section="buy">
+        <h2>Buy</h2>
+        <p>Mock information about buying homes for sale.</p>
+    </div>
+    <div id="sale" data-section="sale">
+        <h2>Sale</h2>
+        <p>Mock information about putting up a home for sale.</p>
+    </div>
+    <div id="loan" data-section="loan">
+        <h2>Loan Calculator</h2>
+        <form>
+            <!--Label and input for loan amount-->
+            <label for="amount">Loan Amount: </label>
+            <input type="number" id="amount" name="amount" required><br>
+            <!--Label and input for interest rate-->
+            <label for="interest">Interest Rate: </label>
+            <input type="number" id="interest" name="interest" required><br>
+            <!--Label and input for loan term-->
+            <label for="term">Loan Term: </label>
+            <input type="number" id="term" name="term" required><br>
+            <!--Label and input for loan start date month and year-->
+            <label for="start">Start Date:</label>
+            <input type="month" id="start" name="start"><br>
+            <!--Label and input for results by year-->
+            <label for="end">Results By Year: </label>
+            <input type="month" id="end" name="end" required><br>
+            <button type="submit">Calculate</button>
+        </form>
+    </div>
+    <div id="loan-results"></div>
+    <div id="about" data-section="about">
+        <h2>About</h2>
+        <p>Description of the realestate website</p>
+    </div>
+    <footer>
+        <p>Copyright 2023 by Keenan Golston</p>
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const navLinks = document.querySelectorAll('nav a');
+            const sections = document.querySelectorAll('div');
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function (event) {
+                    event.preventDefault();
+                
+                    // Remove 'active' class from all links
+                    navLinks.forEach(link => link.parentElement.classList.remove('active'));
+                
+                    // Add 'active' class to the parent li of the selected link
+                    this.parentElement.classList.add('active');
+                
+                    // Remove 'active' class from all sections
+                    sections.forEach(section => section.classList.remove('active'));
+                
+                    // Add 'active' class to the selected section
+                    const sectionId = this.getAttribute('href').substring(1);
+                    document.getElementById(sectionId).classList.add('active');
+                });
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.querySelector('#loan form');
+
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+
+                // Get input values
+                const loanAmount = parseFloat(document.getElementById('amount').value);
+                const interestRate = parseFloat(document.getElementById('interest').value) / 100 / 12;
+                const loanTermMonths = parseFloat(document.getElementById('term').value) * 12;
+
+                // Perform loan calculation
+                const monthlyInterestRate = interestRate / 12;
+                const monthlyPayment = loanAmount * (monthlyInterestRate) / (1 - Math.pow(1 + monthlyInterestRate, -loanTermMonths));
+                let balance = loanAmount;
+                let amortizationSchedule = [];
+
+                for (let i = 0; i < loanTermMonths; i++) {
+                    const interestPaid = balance * monthlyInterestRate;
+                    const principalPaid = monthlyPayment - interestPaid;
+                    balance -= principalPaid;
+
+                    amortizationSchedule.push({
+                        month: i + 1,
+                        balance: balance.toFixed(2),
+                        interestPaid: interestPaid.toFixed(2),
+                        principalPaid: principalPaid.toFixed(2),
+                    });
+                }
+
+                // Display results or update the form as needed
+                console.log('Monthly Payment:', monthlyPayment.toFixed(2));
+                console.log('Amortization Schedule:', amortizationSchedule);
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.querySelector('#loan form');
+            const loanSection = document.getElementById('loan');
+        
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+            
+                // Get input values
+                const loanAmount = parseFloat(document.getElementById('amount').value);
+                const interestRate = parseFloat(document.getElementById('interest').value) / 100 / 12;
+                const loanTermMonths = parseFloat(document.getElementById('term').value) * 12;
+                const startDate = new Date(document.getElementById('start').value);
+                const resultsByYear = parseFloat(document.getElementById('end').value);
+            
+                // Perform loan calculation
+                const monthlyInterestRate = interestRate / 12;
+                const monthlyPayment = loanAmount * (monthlyInterestRate) / (1 - Math.pow(1 + monthlyInterestRate, -loanTermMonths));
+                let balance = loanAmount;
+                let amortizationSchedule = [];
+                let totalInterest = 0;
+                let totalPrincipal = 0;
+            
+                for (let i = 0; i < loanTermMonths; i++) {
+                    const interestPaid = balance * monthlyInterestRate;
+                    const principalPaid = monthlyPayment - interestPaid;
+                    balance -= principalPaid;
+                
+                    // Update totals
+                    totalInterest += interestPaid;
+                    totalPrincipal += principalPaid;
+                
+                    amortizationSchedule.push({
+                        month: i + 1,
+                        balance: balance.toFixed(2),
+                        interestPaid: interestPaid.toFixed(2),
+                        principalPaid: principalPaid.toFixed(2),
+                    });
+                }
+            
+                // Display results in a table within the loan section
+                loanSection.innerHTML = '<h2>Loan Amortization Schedule</h2>';
+                loanSection.innerHTML += '<table>';
+                loanSection.innerHTML += '<tr><th>Year</th><th>Interest Paid</th><th>Principal Paid</th><th>Balance</th></tr>';
+                
+                // Calculate the number of years to display
+                const startYear = startDate.getFullYear();
+                const endYear = startYear + resultsByYear - 1;
+                
+                for (let year = startYear; year <= endYear; year++) {
+                    const entriesForYear = amortizationSchedule.filter(entry => {
+                        const entryYear = startDate.getFullYear() + Math.floor(entry.month / 12);
+                        return entryYear === year;
+                    });
+                
+                    const totalInterestForYear = entriesForYear.reduce((total, entry) => total + parseFloat(entry.interestPaid), 0);
+                    const totalPrincipalForYear = entriesForYear.reduce((total, entry) => total + parseFloat(entry.principalPaid), 0);
+                    const finalBalanceForYear = entriesForYear[entriesForYear.length - 1].balance;
+                
+                    loanSection.innerHTML += `<tr><td>${year}</td><td>${totalInterestForYear.toFixed(2)}</td><td>${totalPrincipalForYear.toFixed(2)}</td><td>${finalBalanceForYear}</td></tr>`;
+                }
+            
+                loanSection.innerHTML += '</table>';
+            
+                // Display the total interest, total principal, and monthly payment
+                loanSection.innerHTML += `<p>Total Interest Paid: $${totalInterest.toFixed(2)}</p>`;
+                loanSection.innerHTML += `<p>Total Principal Paid: $${totalPrincipal.toFixed(2)}</p>`;
+                loanSection.innerHTML += `<p>Monthly Payment: $${monthlyPayment.toFixed(2)}</p>`;
+            });
+        });
+    </script>
+</body>
+</html>
